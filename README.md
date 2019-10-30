@@ -3,53 +3,51 @@
 Haitam Sbaity & Timothé Albouy & Benjamin Rozenfeld
 Ecole Nationale d'Ingénieurs de Bretagne Sud (ENSIBS)
 
-1. Introduction
+## 1. Introduction
 
 Le Flipper Protocol (FP) est un protocole de couche applicative basé sur l'architecture TCP/IP, et permettant à plusieurs ordinateurs d'un même réseau informatique de jouer à une simulation d'envoi de balles.
 
 Le protocole Flipper fonctionne totalement en pair à pair, sans passer par un serveur central qui servirait d'arbitre.
 
-2. Fonctionnement
+## 2. Fonctionnement
 
-2.1. Pré-requis
+### 2.1. Pré-requis
 
 On suppose au préalable que les machines souhaitant participer ont connaissance de l'éventail des adresses IP des joueurs. La méthode de distribution de ces adresses est laissé libre par le développeur chargé de l'implémentation.
 
-2.2. Lancement d'une balle
+### 2.2. Lancement d'une balle
 
 Tout joueur peut générer une balle avec un identifiant et un nombre de rebonds initial, il peut donc y avoir plusieurs balles qui circulent en parallèle parmi les joueurs. Deux personnes qui génèreraient deux balles avec le même identifiant ne créera pas d'erreur, puisque les joueurs renverront la balle et décompteront les points peu importe l'identifiant. Les fraudes possibles n'impliquent pas l'identifiant de balle.
 
 Le joueur générant la balle doit donc générer le premier message d'envoi de balle qui doit contenir les en-têtes suivants :
 
-```
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|         ID de balle           |       Nombre de rebonds       |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-                Format d'Entêtes Envoi Flipper
-```
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |         ID de balle           |       Nombre de rebonds       |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    
+                    Format d'Entêtes Envoi Flipper
 
 Il place dans l'en-tête `ID de balle` un identifiant de 16 bits qu'il a généré aléatoirement, et dans l'en-tête `Nombre de rebonds` un entier positif (codé sur 16 bits) qu'il choisit et qui est le nombre total de rebonds que la balle fera entre les joueurs. Le joueur générant la balle va ensuite envoyer ce message à un autre joueur de l'éventail d'adresses.
 
-2.3. Echange de la balle
+### 2.3. Echange de la balle
 
 Lorsqu'un joueur reçoit un message d'envoi de balle suivant le schéma ci-dessus, il commence par décrémenter le nombre de rebonds dans l'entête correspondante, puis il incrémente en local (et pas sur le message) son score de 1. Si le nombre de rebonds est arrivé à 0, le jeu passe en phase de décompte des points. Sinon, le joueur doit renvoyer le message avec le nombre de rebonds décrémenté à un joueur de l'éventail d'adresses autre que lui-même.
 
-2.4. Décompte des points
+### 2.4. Décompte des points
 
 Lorsque le nombre de rebonds est arrivé à 0, le dernier récepteur de la balle envoie le message en broadcast à l'éventail d'adresses. Les joueurs sauront qu'il s'agit d'un message pour lancer le décompte car l'entête du nombre de rebonds sera égal à 0. A partir de là, tous les joueurs de l'éventail d'adresse doivent envoyer en broadcast leur scores respectifs. Le (ou les) joueur(s) qui possède(nt) le plus haut score sont considérés comme vainqueurs.
 
-3. Modifications pour la version sécurisée
+## 3. Modifications pour la version sécurisée
 
 La version naïve du protocole Flipper laisse place à beaucoup de failles. Par exemple, rien n'empêche un attaquant de mentir sur son score lors de la phase de décompte. La version sécurisée du protocole utilise donc un système de signatures électroniques pour pallier une partie de ces problèmes. Les changements qui ont été effectués dans chaque phase sont donnés dans cette partie.
 
-3.1. Pré-requis
+### 3.1. Pré-requis
 
 Pour que les joueurs puissent signer leurs messages, il faut qu'ils possèdent un couple clé-privée/clé-publique. Chaque joueur devra donc stocker la clé publique associée à chaque adresse IP de l'éventail. Le cryptosystème (RSA, ECC, ...) et la fonction de hachage (SHA-2, SHA-3, ...) utilisés pour réaliser les signature électroniques, ainsi que la méthode de distribution des clés publiques, sont laissés libres au développeur chargé de l'implémentation. La taille des clés publiques et des signatures dans les messages du protocole Flipper dépendra des mesures de sécurité et des paramètres choisis précédement.
 
-3.2. Lancement d'une balle
+### 3.2. Lancement d'une balle
 
 Le message d'envoi d'une balle doit s'enrichir de plusieurs en-têtes:
 
@@ -61,31 +59,29 @@ Le message d'envoi d'une balle doit s'enrichir de plusieurs en-têtes:
 
 Voici le nouveau schéma des en-têtes de message du protocole Flipper :
 
-```
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|         ID de balle           |       Nombre de rebonds       |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                                                               |
-~         Clé publique de l'envoyeur (taille variable)          ~
-|                                                               |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                                                               |
-~          Clé publique du receveur (taille variable)           ~
-|                                                               |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                                                               |
-~       Signature du message précédent (taille variable)        ~
-|                                                               |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                                                               |
-~        Signature du message actuel (taille variable)        +-+
-|                                                             |C|
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |         ID de balle           |       Nombre de rebonds       |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                                                               |
+    ~         Clé publique de l'envoyeur (taille variable)          ~
+    |                                                               |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                                                               |
+    ~          Clé publique du receveur (taille variable)           ~
+    |                                                               |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                                                               |
+    ~       Signature du message précédent (taille variable)        ~
+    |                                                               |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                                                               |
+    ~        Signature du message actuel (taille variable)        +-+
+    |                                                             |C|
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-                Format d'Entêtes Envoi Flipper
-```
+                    Format d'Entêtes Envoi Flipper
 
 Le joueur qui lance la balle au départ doit mettre dans les en-têtes du message initial les informations suivantes :
 - un identifiant de balle généré aléatoirement dans `ID de balle`,
@@ -98,7 +94,7 @@ Le joueur qui lance la balle au départ doit mettre dans les en-têtes du messag
 
 Enfin, il envoie le message rassemblant toutes ces informations au joueur choisi précédemment.
 
-3.3. Echange de balle
+### 3.3. Echange de balle
 
 Lors de la réception d'un message, un joueur doit d'abord vérifier la validité de celui ci. Le message doit être ignoré si :
 - la clé publique de l'envoyeur est incorrecte (elle n'est pas égale à celle qui a été stockée en local et qui correspond à l'adresse IP et qui a effectué l'envoi),
@@ -118,7 +114,7 @@ Si le message a passé la vérification, alors le joueur le stocke en local pour
 
 Enfin, il envoie le message rassemblant toutes ces informations au joueur choisi précédemment.
 
-3.3. Décompte des points
+### 3.3. Décompte des points
 
 Il n'est plus nécessaire pour les joueurs de stocker leur propre score en local, car le décompte des points se passe d'une manière différente. Lorsqu'un joueur atteint le nombre de rebonds restants 0, il envoie le message qu'il a reçu en broadcast à tous les autres joueurs pour lancer prouver qu'i
 
