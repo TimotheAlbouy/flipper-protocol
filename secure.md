@@ -36,23 +36,21 @@ Le protocole Flipper (FLPR) est un protocole de couche applicative basé sur l'a
 ### 3.1. Pré-requis
 
 Les joueurs souhaitant participer doivent stocker en local :
-- la liste des adresses IP des joueurs participants,
-- la liste des identifiants de balle que connaît le joueur, auxquels sont associés :
-  - les scores de chacun des joueurs de la liste d'adresses IP,
-  - la phase de jeu (**échange de balle** ou **décompte des points**) initialisée à **échange de balle**.
+- l'éventail des adresses IP des joueurs participants,
+- leur propre score qui est initialisé à 0.
 
 Sont laissées libres par le développeur chargé de l'implémentation :
 - la logique de stockage des adresses IP sur les clients FLPR,
-- la logique de stockage des identifiants de balle (et des scores et phases associés) sur les clients FLPR,
+- la logique de stockage des scores sur les clients FLPR,
 - la méthode de distribution des adresses IP.
 
 ## 3.2. Structure d'un message FLPR
 
 Un message FLPR doit posséder les en-têtes suivants :
-- `Ball ID` (16 bits), l'identifiant de la balle généré aléatoirement,
+- `Ball ID` (16 bits), l'identifiant de la balle généré lors de l'étape [Lancement d'une balle][3.3],
 - `Bounce Number` (16 bits), un entier non signé donnant :
-  - le nombre de rebonds restants de la balle si le message est envoyé pendant la phase **échange de balle**, 
-  - le score d'un joueur si le message est envoyé pendant la phase **décompte des points**.
+  - le nombre de rebonds restants de la balle si le message est envoyé pendant l'échange de balle, 
+  - le score d'un joueur si le message est envoyé pendant le décompte des points.
 
 Voici le schéma des en-têtes de message FLPR :
 
@@ -68,12 +66,11 @@ Voici le schéma des en-têtes de message FLPR :
 
 #### 3.3.1. Ecoute de messages FLPR
 
-Cette étape est le point d'entrée du protocole et l'état initial de chaque joueur. Le joueur doit être constamment en position d'écoute de messages, et afin de ne pas interrompre cette écoute, toutes les sous-étapes qu'il lancera d'ici doivent être exécutées en asynchrone (dans un nouveau thread par exemple).
+Cette étape est le point d'entrée du protocole et l'état initial de chaque joueur. Le joueur doit être constamment en position d'écoute de messages, et afin de ne pas interrompre cette écoute, toutes les sous-étapes qu'il lancera d'ici seront exécutées en asynchrone (dans un thread différent par exemple).
 
 Si le joueur reçoit un message FLPR, il doit passer à l'étape :
-- [Ajout d'un score][] si et seulement si la phase de jeu est **décompte des points**,
-- [Communication du score][] si et seulement si la valeur de l'en-tête `Bounce Number` est 0,
-- [Vérification du message FLPR reçu][] sinon.
+- [Vérification du message FLPR reçu][] si et seulement si la valeur de l'en-tête `Bounce Number` est supérieure ou égale à 1,
+- [Communication du score][] sinon.
 
 #### 3.3.2. Lancement d'une nouvelle balle
 
@@ -83,42 +80,44 @@ Le joueur doit :
 - créer un message FLPR avec comme en-têtes :
   - un identifiant de balle généré aléatoirement dans `Ball ID`,
   - un nombre de rebonds initial positif ou nul dans `Bounce Number`.
-- envoyer le message FLPR à une adresse IP qui n'est pas la sienne choisie aléatoirement dans la liste d'adresses des joueurs.
+- envoyer le message FLPR à une adresse IP qui n'est pas la sienne choisie aléatoirement dans l'éventail d'adresses.
 
 #### 3.3.3. Vérification du message FLPR reçu
 
 Le joueur doit :
-- incrémenter de 1 son propre score stocké en local et associé à l'identifiant contenu dans `Ball ID`,
-- passer à l'étape :
-  - [Lancement du décompte des points][] si et seulement si la valeur contenue dans `Bounce Number` est 1,
-  - [Renvoi de la balle][] sinon.
+- incrémenter son propre score stocké en local de 1,
+- passer à l'étape [Lancement du décompte des points][] si la valeur contenue dans `Bounce Number` est 1,
+- passer à l'étape [Renvoi de la balle][] sinon.
 
 #### 3.3.4. Renvoi de la balle
 
 Le joueur doit :
 - créer un nouveau message FLPR avec comme en-têtes :
   - la même valeur que celle qui était dans le message reçu dans `Ball ID`,
-  - la valeur qui était dans le message reçu décrémentée de 1 dans `Bounce Number`.
-- envoyer le message FLPR à une adresse IP qui n'est pas la sienne choisie aléatoirement dans la liste d'adresses des joueurs.
+  - la valeur qui était dans le message précédent décrémentée de 1 dans `Bounce Number`.
+- envoyer le message FLPR à une adresse IP qui n'est pas la sienne choisie aléatoirement dans l'éventail d'adresses.
 
-#### 3.3.5 Lancement du décompte des points
+### 3.5. Décompte des points
 
-Le joueur doit :
-- créer un message FLPR avec comme en-têtes :
-  - la même valeur que celle qui était dans le dernier message dans `Ball ID`,
-  - 0 dans `Bounce Number`.
-- envoyer le message FLPR en broadcast à toutes les adresses IP de la liste d'adresses des joueurs (y compris lui-même).
+Le joueur qui a reçu le dernier message d'envoi (`Bounce Number` à 1) pour un `Ball ID` donné doit passer à l'étape [3.5.1. Lancement du décompte][3.5.1].
 
-Sachant que la valeur de `Bounce Number` est 0, les autres joueurs comprendront que le jeu entre en phase de décompte des points.
+Dès qu'un joueur réceptionne un message FLPR de lancement de décompte (`Bounce Number` à 0), il doit passer à l'étape de [3.5.2. Communication des scores][3.5.2].
 
-#### 3.3.6. Communication des scores
+#### 3.5.1. Lancement du décompte
 
-Le joueur doit :
-- passer la phase associée au `Ball ID` du message reçu à **décompte de points**,
-- créer un message FLPR avec comme en-têtes :
-  - la même valeur que celle qui était dans le message reçu dans `Ball ID`,
-  - son score stocké en local pour la valeur de `Ball ID` donnée dans `Bounce Number`.
-- envoyer le message FLPR en broadcast à toutes les autres adresses IP de l'éventail.
+Le joueur doit créer un message FLPR avec comme en-têtes :
+- la même valeur que celle qui était dans le dernier message dans `Ball ID`,
+- 0 dans `Bounce Number`.
+
+Ensuite, le joueur doit envoyer le message FLPR en broadcast à toutes les adresses IP de l'éventail. Sachant que la valeur de `Bounce Number` est 0, les autres joueurs comprendront que le jeu entre en phase de décompte des points.
+
+#### 3.5.2. Communication des scores
+
+Le joueur doit créer un message FLPR avec comme en-têtes :
+- la même valeur que celle qui était dans le message reçu dans `Ball ID`,
+- son score stocké en local pour la valeur de `Ball ID` donnée dans `Bounce Number`.
+
+Enfin, le joueur doit envoyer le message FLPR en broadcast à toutes les autres adresses IP de l'éventail.
 
 En parallèle, le joueur reçoit les message FLPR de communication du score des autres adresses IP de l'éventail. Si l'une d'entre elle n'a pas encore communiqué son score au joueur, c'est probablement dû au fait que l'autre joueur n'a pas encore reçu le message FLPR de lancement du décompte et donc qu'il interprète les messages de communication du score comme des messages d'envoi de balle. Dans ce cas-là, le premier joueur doit continuer à envoyer le message FLPR à l'adresse IP qui n'a pas encore donné son score.
 
@@ -151,10 +150,12 @@ Sont laissés libres au développeur chargé de l'implémentation :
 
 La taille des clés publiques et des signatures dans les messages du protocole FLPR dépendra des mesures de sécurité et des paramètres choisis par le développeur.
 
+L'état initial d'un joueur est l'étape [Ecoute de messages FLPR][4.4], mais tout joueur peut spontanément passer à l'étape [Lancement d'une balle][4.3] quand il le souhaite.
+
 ### 4.2. Structure d'un message FLPR
 
 Un message FLPR doit posséder les en-têtes suivants :
-- `Ball ID` (16 bits), l'identifiant de la balle généré aléatoirement,
+- `Ball ID` (16 bits), l'identifiant de la balle généré lors de l'étape [4.3. Lancement d'une balle][4.3],
 - `Bounce Number` (16 bits), un entier non signé donnant le nombre de rebonds restants de la balle, 
 - `Source Public Key` (taille variable), la clé publique de l'envoyeur du message qui sert à vérifier la signature du message actuel,
 - `Destination Public Key` (taille variable), la clé publique de celui qui reçoit le message,
@@ -192,17 +193,9 @@ Voici le nouveau schéma des en-têtes de message FLPR :
 
 ### 4.3. Etapes du jeu
 
-#### 4.3.1. Ecoute de messages FLPR
+#### 4.3.1. Lancement d'une nouvelle balle
 
-Cette étape est le point d'entrée du protocole et l'état initial de chaque joueur. Le joueur doit être constamment en position d'écoute de messages, et afin de ne pas interrompre cette écoute, toutes les sous-étapes qu'il lancera d'ici doivent être exécutées en asynchrone (dans un nouveau thread par exemple).
-
-Si le joueur reçoit un message FLPR, il doit passer à l'étape :
-- [Communication du score][] si et seulement si la valeur de l'en-tête `C` est 1,
-- [Vérification du message FLPR reçu][] sinon.
-
-#### 4.3.2. Lancement d'une nouvelle balle
-
-Chaque joueur peut lancer cette étape quand il le souhaite, ce qui signifie qu'il peut y avoir plusieurs balles qui circulent en parallèle parmi les joueurs. Deux personnes qui génèreraient deux balles avec le même identifiant ne créera pas d'erreur, puisque les joueurs renverront la balle et décompteront les points peu importe l'identifiant. Les fraudes possibles n'impliquent pas l'identifiant de balle.
+Tout joueur peut générer une balle avec un identifiant et un nombre de rebonds initial, il peut donc y avoir plusieurs balles qui circulent en parallèle parmi les joueurs. Deux personnes qui génèreraient deux balles avec le même identifiant ne créera pas d'erreur, puisque les joueurs renverront la balle et décompteront les points peu importe l'identifiant. Les fraudes possibles n'impliquent pas l'identifiant de balle.
 
 Le joueur doit :
 - créer un nouveau message FLPR avec comme en-têtes :
@@ -213,7 +206,14 @@ Le joueur doit :
   - que des 0 dans `Previous Signature` (car il n'y a pas de message précédent),
   - le hash de tous les en-têtes précédents, le tout encrypté avec la clé privée du joueur dans `Current Signature`,
   - 0 dans `C`,
-- envoyer le message FLPR au joueur choisi précédemment.
+- envoyer le message FLPR au joueur choisi précédemment,
+- passer à l'étape [Echange de la balle][4.3.2].
+
+#### 4.3.2. Ecoute de messages FLPR
+
+Le joueur doit être constamment en position d'écoute. S'il reçoit un message FLPR, il doit passer à l'étape :
+- [Décompte des points][4.3.5] si et seulement si la valeur de l'en-tête `C` est 1,
+- [Vérification du message FLPR reçu][4.4.1] sinon.
 
 ##### 4.3.3. Vérification du message FLPR de renvoi de balle
 
