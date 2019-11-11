@@ -1,0 +1,14 @@
+
+
+Si l'une d'entre elle n'a pas encore communiqué son score au joueur, c'est probablement dû au fait que l'autre joueur n'a pas encore reçu le message FLPR de lancement du décompte et donc qu'il interprète les messages de communication du score comme des messages d'envoi de balle. Dans ce cas-là, le premier joueur doit continuer à envoyer le message FLPR à l'adresse IP qui n'a pas encore donné son score.
+
+messages idempotents. Par exemple, tant que nous n'avons pas reçu la confirmation qu'un joueur a bien reçu et interprété le message qu'on lui a envoyé, nous continuons de lui en envoyer. En revanche, si le récepteur a bien reçu et interprété le message une fois, lui renvoyer des messages ne servira à rien. Cependant, nous n'allons pas régler ce problème dans la nouvelle version.
+La structure de données formée par les messages rappelle une liste chaînée de Merkle ou une chaîne de blocs
+l'ordre causal des messages n'est pas garanti : par exemple, 
+
+  - la clé publique de l'envoyeur est incorrecte : la clé publique de l'avant-dernière ligne de `Bounces History` n'est pas égale à la clé publique stockée en local qui correspond au `Source address` du packet IP enveloppant,
+
+On considère qu'un joueur a objectivement gagné lorsque plus de la moitié des joueurs s'accordent à dire que c'est le cas.
+
+
+Cependant, la méthode préconisée 
