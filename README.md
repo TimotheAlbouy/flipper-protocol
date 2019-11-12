@@ -48,18 +48,18 @@ Sont laissées libres par le développeur chargé de l'implémentation :
 
 Un message FLPR doit posséder les en-têtes suivants :
 - `Ball ID` (16 bits), l'identifiant de la balle généré aléatoirement,
-- `Bounces Number` (16 bits), un entier non signé donnant le nombre de rebonds initial de la balle, 
-- `Bounces History` (taille variable), qui contient l'historique de tous les rebonds qu'a fait la balle, c'est-à-dire pour chacun d'entre-eux une ligne contenant l'adresse IP du récepteur.
+- `Bounce Amount` (16 bits), un entier non signé donnant le nombre de rebonds initial de la balle, 
+- `Bounce History` (taille variable), qui contient l'historique de tous les rebonds qu'a faits la balle, c'est-à-dire pour chacun d'entre-eux une ligne contenant l'adresse IP du récepteur.
 
 Voici le schéma des en-têtes de message FLPR :
 
      0                   1                   2                   3
      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |            Ball ID            |         Bounces Number        |
+    |            Ball ID            |         Bounce Amount         |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                                                               |
-    ~               Bounces History (taille variable)               ~
+    ~                Bounce History (taille variable)               ~
     |                                                               |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     
@@ -72,7 +72,7 @@ Voici le schéma des en-têtes de message FLPR :
 Cette étape est le point d'entrée du protocole et l'état initial de chaque joueur. Le joueur doit être constamment en position d'écoute de messages, et afin de ne pas interrompre cette écoute, toutes les sous-étapes qu'il lancera d'ici doivent être exécutées en asynchrone (dans un nouveau thread par exemple).
 
 Si le joueur reçoit un message FLPR, il doit passer à l'étape :
-- [Election du gagnant][3.3.6] si et seulement si le nombre de lignes de `Bounces History` est égal à la valeur de `Bounces Number` plus 2,
+- [Election du gagnant][3.3.6] si et seulement si le nombre de lignes de `Bounce History` est égal à la valeur de `Bounce Amount` plus 2,
 - [Vérification du message FLPR reçu][3.3.3] sinon,
 
 #### 3.3.2. Lancement d'une nouvelle balle
@@ -82,14 +82,14 @@ Chaque joueur peut lancer cette étape quand il le souhaite, ce qui signifie qu'
 Le joueur doit :
 - créer un message FLPR avec comme en-têtes :
   - un identifiant de balle généré aléatoirement dans `Ball ID`,
-  - un nombre de rebonds initial positif ou nul dans `Bounces Number`.
-  - une ligne dans `Bounces History` contenant une adresse IP qui n'est pas la sienne choisie aléatoirement dans la liste des joueurs participants,
+  - un nombre de rebonds initial positif ou nul dans `Bounce Amount`.
+  - une ligne dans `Bounce History` contenant une adresse IP qui n'est pas la sienne choisie aléatoirement dans la liste des joueurs participants,
 - envoyer le message FLPR au joueur choisi précédemment.
 
 #### 3.3.3. Vérification du message FLPR reçu
 
 Le joueur doit passer à l'étape :
-  - [Communication des scores][3.3.5] si et seulement si le nombre de lignes de `Bounces History` est égal à la valeur de `Bounces Number` plus 1,
+  - [Communication des scores][3.3.5] si et seulement si le nombre de lignes de `Bounce History` est égal à la valeur de `Bounce Amount` plus 1,
   - [Renvoi d'une balle][3.3.4] sinon.
 
 #### 3.3.4. Renvoi d'une balle
@@ -97,8 +97,8 @@ Le joueur doit passer à l'étape :
 Le joueur doit :
 - créer un nouveau message FLPR avec comme en-têtes :
   - la même valeur que celle qui était dans le message reçu dans `Ball ID`,
-  - la même valeur que celle qui était dans le message reçu dans `Bounces Number`,
-  - le même contenu que précédemment dans `Bounces History` mais avec une nouvelle ligne contenant une adresse IP qui n'est pas la sienne choisie aléatoirement dans la liste des joueurs participants,
+  - la même valeur que celle qui était dans le message reçu dans `Bounce Amount`,
+  - le même contenu que précédemment dans `Bounce History` mais avec une nouvelle ligne à la fin contenant une adresse IP qui n'est pas la sienne choisie aléatoirement dans la liste des joueurs participants,
 - envoyer le message FLPR au joueur choisi précédemment.
 
 #### 3.3.5. Communication du score
@@ -106,15 +106,15 @@ Le joueur doit :
 Le joueur doit :
 - créer un nouveau message FLPR avec comme en-têtes :
   - la même valeur que celle qui était dans le message reçu dans `Ball ID`,
-  - la même valeur que celle qui était dans le message reçu dans `Bounces Number`,
-  - le même contenu que précédemment dans `Bounces History` mais avec une nouvelle ligne contenant la chaîne de caractères "STOP",
+  - la même valeur que celle qui était dans le message reçu dans `Bounce Amount`,
+  - le même contenu que précédemment dans `Bounce History` mais avec une nouvelle ligne contenant la chaîne de caractères "STOP",
 - envoyer le message FLPR en broadcast à toutes les adresses IP de la liste d'adresses des joueurs (y compris lui-même).
 
-*Note : Sachant que le nombre de lignes de `Bounces History` est égal à la valeur de `Bounces Number` plus 2, les autres joueurs comprendront que le jeu entre en phase de décompte des points.*
+*Note : Sachant que le nombre de lignes de `Bounce History` est égal à la valeur de `Bounce Amount` plus 2, les autres joueurs comprendront que le jeu entre en phase de décompte des points.*
 
 #### 3.3.6. Election du gagnant
 
-La/les adresse(s) IP apparaissant le plus souvent dans `Bounces History` est/sont celle(s) du/des joueur(s) qui a/ont gagné l'échange de balles.
+La/les adresse(s) IP apparaissant le plus souvent dans `Bounce History` est/sont celle(s) du/des joueur(s) qui a/ont gagné l'échange de balles.
 
 ## 3.4. Améliorations possibles
 
@@ -144,23 +144,23 @@ La taille des clés publiques et des signatures dans les messages du protocole F
 
 Un message FLPR doit posséder les en-têtes suivants :
 - `Ball ID` (16 bits), l'identifiant de la balle généré aléatoirement,
-- `Bounces Number` (16 bits), un entier non signé donnant le nombre de rebonds initial de la balle, 
+- `Bounce Amount` (16 bits), un entier non signé donnant le nombre de rebonds initial de la balle, 
 - `Creator Public Key` (taille variable), la clé publique du créateur de la balle qui sert à vérifier la première signature électronique,
-- `Bounces History` (taille variable), qui contient l'historique de tous les rebonds qu'a fait la balle, c'est-à-dire pour chacun d'entre-eux une ligne contenant la clé publique du récepteur et la signature électronique de toutes les informations précédentes du message FLPR (y compris les clé publiques et signatures précédentes).
+- `Bounce History` (taille variable), qui contient l'historique de tous les rebonds qu'a faits la balle, c'est-à-dire pour chacun d'entre-eux une ligne contenant la clé publique du récepteur et la signature électronique de toutes les informations précédentes du message FLPR (y compris les clé publiques et signatures précédentes).
 
 Voici le schéma des en-têtes de message FLPR :
 
      0                   1                   2                   3
      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |            Ball ID            |         Bounces Number        |
+    |            Ball ID            |         Bounce Amount        |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                                                               |
     ~              Creator Public Key (taille variable)             ~
     |                                                               |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                                                               |
-    ~               Bounces History (taille variable)               ~
+    ~                Bounce History (taille variable)               ~
     |                                                               |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
@@ -173,7 +173,7 @@ Voici le schéma des en-têtes de message FLPR :
 Cette étape est le point d'entrée du protocole et l'état initial de chaque joueur. Le joueur doit être constamment en position d'écoute de messages, et afin de ne pas interrompre cette écoute, toutes les sous-étapes qu'il lancera d'ici doivent être exécutées en asynchrone (dans un nouveau thread par exemple).
 
 Si le joueur reçoit un message FLPR, il doit passer à l'étape :
-- [Election du gagnant][4.3.6] si et seulement si le nombre de lignes de `Bounces History` est égal à la valeur de `Bounces Number` plus 2,
+- [Election du gagnant][4.3.6] si et seulement si le nombre de lignes de `Bounce History` est égal à la valeur de `Bounce Amount` plus 2,
 - [Vérification du message FLPR reçu][4.3.3] sinon.
 
 #### 4.3.2. Lancement d'une nouvelle balle
@@ -183,11 +183,11 @@ Chaque joueur peut lancer cette étape quand il le souhaite, ce qui signifie qu'
 Le joueur doit :
 - créer un nouveau message FLPR avec comme en-têtes :
   - un identifiant de balle généré aléatoirement dans `Ball ID`,
-  - un nombre de rebonds initial positif ou nul dans `Bounces Number`.
+  - un nombre de rebonds initial positif ou nul dans `Bounce Amount`.
   - sa propre clé publique dans `Creator Public Key`,
-  - une ligne dans `Bounces History` contenant :
+  - une ligne dans `Bounce History` contenant :
     - une clé publique qui n'est pas la sienne choisie aléatoirement dans la liste des joueurs participants,
-    - le hash de tous les bits précédents dans le message FLPR, le tout encrypté avec la clé privée du joueur,
+    - le hash de tous les bits précédents du message FLPR, le tout encrypté avec la clé privée du joueur,
 - envoyer le message FLPR au joueur choisi précédemment.
 
 #### 4.3.3. Vérification du message FLPR reçu
@@ -195,10 +195,10 @@ Le joueur doit :
 Le joueur doit :
 - ignorer le message reçu (et donc arrêter l'exécution de cette étape) si :
   - la clé publique du receveur est incorrecte : la valeur contenue dans `Destination Public Key` n'est pas égale à la clé publique du joueur qui fait la vérification,
-  - la vérification des signatures échoue : la signature de chaque ligne de `Bounces History`, une fois décryptée avec la clé publique de l'envoyeur (i.e. `Creator Public Key` s'il s'agit de la première ligne, ou la clé publique de la ligne précédente sinon), doit être égale au hash de tous les bits la précédant dans le message FLPR,
-  - la balle a surpassé la limite de rebonds : le nombre de lignes de `Bounces History` est supérieur à la valeur de `Bounces Number` plus 1,
-  - un joueur s'est envoyé la balle à lui-même : la même clé publique apparaît dans deux lignes consécutives de `Bounces History`,
-- passer à l'étape [Communication des scores][4.3.5] si et seulement si le nombre de lignes de `Bounces History` est égal à la valeur contenue dans `Bounces Number` plus 1,
+  - la vérification des signatures échoue : la signature de chaque ligne de `Bounce History`, une fois décryptée avec la clé publique de l'envoyeur (i.e. `Creator Public Key` s'il s'agit de la première ligne, ou la clé publique de la ligne précédente sinon), doit être égale au hash de tous les bits la précédant dans le message FLPR,
+  - la balle a surpassé la limite de rebonds : le nombre de lignes de `Bounce History` est supérieur à la valeur de `Bounce Amount` plus 1,
+  - un joueur s'est envoyé la balle à lui-même : la même clé publique apparaît dans deux lignes consécutives de `Bounce History`,
+- passer à l'étape [Communication des scores][4.3.5] si et seulement si le nombre de lignes de `Bounce History` est égal à la valeur contenue dans `Bounce Amount` plus 1,
 - sinon, passer à l'étape [Renvoi d'une balle][4.3.4].
 
 *Note : Lorsque les informations du messages se révèlent incorrectes, la meilleure option pour le récepteur du message est de ne rien faire. Il ne peut pas prévenir les autres joueurs de la tentative de triche en leur envoyant le message, car il ne peut pas prouver qu'il n'accuse pas injustement l'envoyeur :*
@@ -210,10 +210,10 @@ Le joueur doit :
 Le joueur doit :
 - créer un nouveau message FLPR avec comme en-têtes :
   - la même valeur que celle qui était dans le message reçu dans `Ball ID`,
-  - la même valeur que celle qui était dans le message reçu dans `Bounces Number`,
-  - le même contenu que précédemment dans `Bounces History` mais avec une nouvelle ligne contenant :
+  - la même valeur que celle qui était dans le message reçu dans `Bounce Amount`,
+  - le même contenu que précédemment dans `Bounce History` mais avec une nouvelle ligne à la fin contenant :
     - une clé publique qui n'est pas la sienne choisie aléatoirement dans la liste des joueurs participants,
-    - le hash de tous les bits précédents dans le message FLPR, le tout encrypté avec la clé privée du joueur,
+    - le hash de tous les bits précédents du message FLPR, le tout encrypté avec la clé privée du joueur,
 - envoyer le message FLPR au joueur choisi précédemment.
 
 #### 4.3.5. Communication des scores
@@ -221,20 +221,20 @@ Le joueur doit :
 Le joueur doit :
 - créer un nouveau message FLPR avec comme en-têtes :
   - la même valeur que celle qui était dans le message reçu dans `Ball ID`,
-  - la même valeur que celle qui était dans le message reçu dans `Bounces Number`,
-  - le même contenu que précédemment dans `Bounces History` mais avec une nouvelle ligne contenant la chaîne de caractères "STOP",
+  - la même valeur que celle qui était dans le message reçu dans `Bounce Amount`,
+  - le même contenu que précédemment dans `Bounce History` mais avec une nouvelle ligne contenant la chaîne de caractères "STOP",
 - envoyer le message FLPR en broadcast à toutes les adresses IP de la liste d'adresses des joueurs (y compris lui-même).
 
-*Note : Sachant que le nombre de lignes de `Bounces History` est égal à la valeur de `Bounces Number` plus 2, les autres joueurs comprendront que le jeu entre en phase de décompte des points.*
+*Note : Sachant que le nombre de lignes de `Bounce History` est égal à la valeur de `Bounce Amount` plus 2, les autres joueurs comprendront que le jeu entre en phase de décompte des points.*
 
 #### 4.3.6. Election du gagnant
 
 Le joueur doit ignorer le message reçu (et donc arrêter l'exécution de cette étape) si :
-- la vérification des signatures échoue : la signature de chaque ligne de `Bounces History`, une fois décryptée avec la clé publique de l'envoyeur (i.e. `Creator Public Key` s'il s'agit de la première ligne, ou la clé publique de la ligne précédente sinon), doit être égale au hash de tous les bits la précédant dans le message FLPR,
-- un joueur s'est envoyé la balle à lui-même : la même clé publique apparaît dans deux lignes consécutives de `Bounces History`,
-- la dernière ligne de `Bounces History` n'est pas la chaîne de caractères "STOP".
+- la vérification des signatures échoue : la signature de chaque ligne de `Bounce History`, une fois décryptée avec la clé publique de l'envoyeur (i.e. `Creator Public Key` s'il s'agit de la première ligne, ou la clé publique de la ligne précédente sinon), doit être égale au hash de tous les bits la précédant dans le message FLPR,
+- un joueur s'est envoyé la balle à lui-même : la même clé publique apparaît dans deux lignes consécutives de `Bounce History`,
+- la dernière ligne de `Bounce History` n'est pas la chaîne de caractères "STOP".
 
-La/les clé(s) publique(s) apparaissant le plus souvent dans `Bounces History` est/sont celle(s) du/des joueur(s) qui a/ont gagné l'échange de balles.
+La/les clé(s) publique(s) apparaissant le plus souvent dans `Bounce History` est/sont celle(s) du/des joueur(s) qui a/ont gagné l'échange de balles.
 
 ## 4.4. Améliorations possibles
 
