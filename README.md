@@ -130,7 +130,7 @@ Chaque joueur souhaitant participer doit stocker en local :
 - la liste des adresses IP et des clés publiques des joueurs participants,
 - leur propre clé privée.
 
-Sont laissées libres par le développeur chargé de l'implémentation :
+Sont laissés libres par le développeur chargé de l'implémentation :
 - la logique de stockage des adresses IP et des clés publiques sur les clients FLPR,
 - la logique de stockage de la clé privée sur les clients FLPR,
 - le cryptosystème (RSA, ECC, ...) utilisé pour réaliser les signature électroniques,
