@@ -133,9 +133,8 @@ Chaque joueur souhaitant participer doit stocker en local :
 Sont laissés libres par le développeur chargé de l'implémentation :
 - la logique de stockage des adresses IP et des clés publiques associées sur les clients FLPR,
 - la logique de stockage de la clé privée sur les clients FLPR,
-- le cryptosystème (RSA, ECC, ...) utilisé pour réaliser les signature électroniques,
-- la fonction de hachage (SHA-2, SHA-3, ...) utilisée pour réaliser les signature électroniques,
-- la méthode de distribution des adresses IP et des clés publiques associées.
+- la méthode de distribution des adresses IP et des clés publiques associées,
+- le cryptosystème (RSA, ECC, ...) et la fonction de hachage (SHA-2, SHA-3, ...) utilisés pour réaliser les signature électroniques.
 
 La taille des clés publiques et des signatures dans les messages du protocole FLPR dépendra des mesures de sécurité et des paramètres choisis par le développeur.
 
