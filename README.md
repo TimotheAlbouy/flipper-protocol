@@ -114,7 +114,7 @@ Le joueur doit :
 
 #### 3.3.6. Election du gagnant
 
-La/les adresse(s) IP apparaissant le plus souvent dans `Bounce History` est/sont celle(s) du/des joueur(s) qui a/ont gagné l'échange de balles.
+L'adresse IP apparaissant le plus souvent dans `Bounce History` est celle du joueur qui a gagné l'échange de balles. Il peut y avoir plusieurs gagnants.
 
 ## 3.4. Améliorations possibles
 
@@ -151,7 +151,7 @@ Voici le schéma des en-têtes de message FLPR :
      0                   1                   2                   3
      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |            Ball ID            |         Bounce Amount        |
+    |            Ball ID            |         Bounce Amount         |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                                                               |
     ~              Creator Public Key (taille variable)             ~
@@ -232,7 +232,7 @@ Le joueur doit ignorer le message reçu (et donc arrêter l'exécution de cette 
 - un joueur s'est envoyé la balle à lui-même : la même clé publique apparaît dans deux lignes consécutives de `Bounce History`,
 - la dernière ligne de `Bounce History` n'est pas la chaîne de caractères "STOP".
 
-La/les clé(s) publique(s) apparaissant le plus souvent dans `Bounce History` est/sont celle(s) du/des joueur(s) qui a/ont gagné l'échange de balles.
+La clé publique apparaissant le plus souvent dans `Bounce History` est celle du joueur qui a gagné l'échange de balles. Il peut y avoir plusieurs gagnants.
 
 ## 4.4. Améliorations possibles
 
