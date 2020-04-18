@@ -1,6 +1,8 @@
 import sys
 from scapy.all import *
 
+from impl.constants import FLPR_PORT
+
 
 class FLPR(Packet):
     name = "FLPR"
@@ -10,3 +12,7 @@ class FLPR(Packet):
         FieldLenField("len", None, count_of="hist"),
         FieldListField("hist", [], IPField("", "0.0.0.0"), count_from=lambda pkt: pkt.len)
     ]
+
+
+bind_layers(TCP, FLPR, sport=FLPR_PORT)
+bind_layers(TCP, FLPR, dport=FLPR_PORT)
