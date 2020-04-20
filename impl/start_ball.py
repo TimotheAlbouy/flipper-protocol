@@ -13,8 +13,8 @@ def start_ball():
         lim = random.getrandbits(8)
     hist = [dst]
     send_flpr(dst, id, lim, hist)
-    print(f"new ball created, ID = {id}")
-    print(f"time: {time.time()}")
+    print("new ball created, ID = %s" % id)
+    print("time: %s" % time.time())
 
 
 if __name__ == "__main__":

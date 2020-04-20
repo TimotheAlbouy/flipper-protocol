@@ -12,7 +12,7 @@ def atk_flpr_2():
     lim = random.getrandbits(8)
     hist = [src]
     send_flpr(dst, id, lim, hist)
-    print(f"new illegal ball created, ID = {id}")
+    print("new illegal ball created, ID = %s" % id)
 
 
 if __name__ == "__main__":

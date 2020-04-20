@@ -15,13 +15,13 @@ def elect_winner(hist, id):
         if s[1] < high_score:
             break
         winners.append(s[0])
-    print(f"winner(s) of ball {id}: {', '.join(winners)}")
-    print(f"time: {time.time()}")
+    print("winner(s) of ball %s: %s" % (id, ", ".join(winners)))
+    print("time: %s" % time.time())
 
 
 def handle_flpr(pkt):
     flpr = pkt[FLPR]
-    print(f"flipper message received, ID = {flpr.id}, CTR = {flpr.ctr}, LIM = {flpr.lim}")
+    print("flipper message received, ID = %s, CTR = %s, LIM = %s" % (flpr.id, flpr.ctr, flpr.lim))
     if flpr.lim == 0:
         print("do nothing")
     elif flpr.ctr == flpr.lim:
@@ -47,6 +47,6 @@ def handle_flpr(pkt):
 if __name__ == "__main__":
     bind_layers(TCP, FLPR, sport=FLPR_PORT)
     bind_layers(TCP, FLPR, dport=FLPR_PORT)
-    print(f"listening for FLPR on TCP port {FLPR_PORT}")
+    print("listening for FLPR on TCP port %s" % FLPR_PORT)
     # intercept only incoming FLPR messages
     sniff(prn=handle_flpr, lfilter=lambda pkt: FLPR in pkt and pkt[Ether].src != Ether().src)
