@@ -1,4 +1,3 @@
-import sys
 from collections import Counter
 
 from scapy.all import *
