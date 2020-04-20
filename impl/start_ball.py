@@ -4,13 +4,12 @@ from impl.flpr import FLPR, FLPR_PORT, send_flpr, random_ip
 
 
 def start_ball():
-    dest = random_ip()
+    dst = random_ip()
     id = random.getrandbits(16)
     lim = random.getrandbits(8)
-    hist = [dest]
-    ball = send_flpr(dest, id, lim, hist)
-    send(ball)
-    print("New FLPR ball created, ID = %s." % id)
+    hist = [dst]
+    send_flpr(dst, id, lim, hist)
+    print("new ball created, ID = %s." % id)
 
 
 if __name__ == "__main__":

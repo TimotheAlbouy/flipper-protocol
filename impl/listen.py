@@ -19,9 +19,9 @@ def handle_flpr(pkt):
                 send_flpr(ip, flpr.id, flpr.lim, flpr.hist)
             print("scores communicated")
         elif flpr.ctr < flpr.lim - 1:
-            dest = random_ip()
-            flpr.hist.append(dest)
-            send_flpr(dest, flpr.id, flpr.lim, flpr.hist)
+            dst = random_ip()
+            flpr.hist.append(dst)
+            send_flpr(dst, flpr.id, flpr.lim, flpr.hist)
             print("ball resent")
         else:
             print("do nothing")
