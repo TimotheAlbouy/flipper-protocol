@@ -1,3 +1,5 @@
+from collections import Counter
+
 from scapy.all import *
 
 from impl.flpr import FLPR, FLPR_PORT, send_flpr, random_ip
@@ -11,8 +13,8 @@ def handle_flpr(pkt):
         if flpr.lim == 0:
             print("do nothing")
         elif flpr.ctr == flpr.lim:
-            winner_ip = max(set(flpr.hist), key=flpr.hist.count)
-            print("winner of ball is %s" % winner_ip)
+            winners, nb = Counter(flpr.hist).most_common(1)
+            print("winner(s) of ball %s: %s" % (flpr.id, winners))
         elif flpr.ctr == flpr.lim - 1:
             flpr.hist.append("0.0.0.0")
             for ip in pool:
@@ -20,6 +22,7 @@ def handle_flpr(pkt):
             print("scores communicated")
         elif flpr.ctr < flpr.lim - 1:
             dst = random_ip()
+            print(flpr.hist, dst)
             flpr.hist.append(dst)
             send_flpr(dst, flpr.id, flpr.lim, flpr.hist)
             print("ball resent")
