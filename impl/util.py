@@ -1,8 +1,7 @@
 from scapy.all import *
 
-from impl.pool import pool
-
 from impl.flpr import FLPR, FLPR_PORT
+from impl.pool import pool
 
 
 def send_flpr(dst, id, lim, hist):
