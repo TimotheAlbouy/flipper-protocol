@@ -2,9 +2,9 @@ from collections import Counter
 
 from scapy.all import *
 
-from .flpr import FLPR, FLPR_PORT
-from .util import send_flpr, random_ip, own_ip
-from .pool import pool
+from flpr import FLPR, FLPR_PORT
+from util import send_flpr, random_ip, own_ip
+from pool import pool
 
 
 def elect_winner(hist, id):
