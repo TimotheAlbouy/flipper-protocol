@@ -13,8 +13,11 @@ def handle_flpr(pkt):
         if flpr.lim == 0:
             print("do nothing")
         elif flpr.ctr == flpr.lim:
-            winners, nb = Counter(flpr.hist).most_common(1)
-            print("winner(s) of ball %s: %s" % (flpr.id, winners))
+            winners = Counter(flpr.hist).most_common()
+            print("winner(s) of ball %s:" % flpr.id)
+            for w in winners:
+                ip, nb = w
+                print(ip)
         elif flpr.ctr == flpr.lim - 1:
             flpr.hist.append("0.0.0.0")
             for ip in pool:
@@ -22,8 +25,8 @@ def handle_flpr(pkt):
             print("scores communicated")
         elif flpr.ctr < flpr.lim - 1:
             dst = random_ip()
-            print(flpr.hist, dst)
             flpr.hist.append(dst)
+            print(IP().src, dst)
             send_flpr(dst, flpr.id, flpr.lim, flpr.hist)
             print("ball resent")
         else:
