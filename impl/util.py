@@ -2,6 +2,8 @@ from scapy.all import *
 
 from impl.pool import pool
 
+from impl.flpr import FLPR, FLPR_PORT
+
 
 def send_flpr(dst, id, lim, hist):
     flpr = IP(dst=dst)/TCP(sport=FLPR_PORT, dport=FLPR_PORT)/FLPR(id=id, lim=lim, hist=hist)
