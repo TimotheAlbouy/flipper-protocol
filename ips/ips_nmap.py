@@ -24,5 +24,4 @@ def verify_pkt(pkt):
 if __name__ == "__main__":
     conf.color_theme = ColorOnBlackTheme()
     print("Listening for all TCP or UDP segments.")
-    f = "tcp or udp"
-    sniff(filter=f, prn=verify_pkt)
+    sniff(filter="tcp or udp", prn=verify_pkt)

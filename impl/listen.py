@@ -15,12 +15,12 @@ def elect_winner(hist, id):
         if s[1] < high_score:
             break
         winners.append(s[0])
-    print("winners of ball %s: %s" % (id, winners))
+    print("winner(s) of ball %s: %s" % (id, ", ".join(winners)))
 
 
 def handle_flpr(pkt):
     flpr = pkt[FLPR]
-    print("FLPR received")
+    print("flipper message received, ID = %s, CTR = %s, LIM = %s" % (flpr.id, flpr.ctr, flpr.lim))
     if flpr.lim == 0:
         print("do nothing")
     elif flpr.ctr == flpr.lim:
@@ -40,6 +40,7 @@ def handle_flpr(pkt):
         print("ball resent")
     else:
         print("do nothing")
+    print()
 
 
 if __name__ == "__main__":

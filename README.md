@@ -11,11 +11,44 @@ FLPR version non-sécurisée possède une implémentation de référence en Pyth
 
 ## Utilisation
 
-D'abord, installez les dépendances :
+D'abord, installez Python ainsi que les dépendances du projet :
 
+    apt update
+    apt install python3.6
     pip install -r requirements.txt
 
-Pour lancer la phase d'écoute de messages FLPR, exécutez `listen.py`. Pour lancer une nouvelle balle, exécutez `start_ball.py`.
+Ensuite, modifiez la liste des IP des participants dans `pool.py`, par exemple :
+
+    pool = [
+        "192.168.1.15",
+        "192.168.1.20"
+    ]
+
+Pour lancer la phase d'écoute de messages FLPR :
+
+    python listen.py
+
+Pour lancer une nouvelle balle :
+
+    python start_ball.py
+
+Pour lancer sur la machine attaquante l'attaque 1 :
+
+    python atk_flpr_1.py
+
+Pour lancer sur l'IPS le code prémunissant contre l'attaque 1 :
+
+    python ips_flpr_1.py
+
+Pour lancer sur la machine attaquante l'attaque 2 :
+
+    python atk_flpr_2.py
+
+Pour lancer sur l'IPS le code prémunissant contre l'attaque 2 :
+
+    python ips_flpr_2.py
+
+
 
 
 [specs-unsafe]: /TimotheAlbouy/flipper-protocol/blob/master/specs-unsafe.md
