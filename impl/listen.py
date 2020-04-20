@@ -3,13 +3,11 @@ from collections import Counter
 from scapy.all import *
 
 from impl.flpr import FLPR, FLPR_PORT
-from impl.util import send_flpr, random_ip, own_mac
+from impl.util import send_flpr, random_ip
 from impl.pool import pool
 
 
 def handle_flpr(pkt):
-    ls(pkt)
-    return
     flpr = pkt[FLPR]
     print("received FLPR[id=%s, ctr=%s, lim=%s, hist=%s]" % (flpr.id, flpr.ctr, flpr.lim, flpr.hist))
     if flpr.lim == 0:
