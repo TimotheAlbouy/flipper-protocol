@@ -20,12 +20,12 @@ Ecole Nationale d'Ingénieurs de Bretagne Sud (ENSIBS)
 
 FLPR est un protocole de couche applicative basé sur l'architecture TCP/IP (pour ne pas avoir à se soucier des paquets perdus), c'est-à-dire que chaque message FLPR sera encapsulé dans un segment TCP, lui-même encapsulé dans un packet IPv4.
 
-Par convention, le port TCP utilisé par FLPR est **16180** (le début du nombre d'or).
+Par convention, le port TCP utilisé par FLPR est **16 180** (le début du nombre d'or).
 
-Chaque joueur souhaitant participer doit stocker en local la liste des adresses IP des joueurs participants.
+Chaque joueur doit stocker en local la liste des adresses IP de tous les participants au jeu.
 
 Sont laissées libres par le développeur chargé de l'implémentation :
-- la logique de stockage des adresses IP sur les clients FLPR,
+- la méthode de stockage des adresses IP,
 - la méthode de distribution des adresses IP.
 
 ## 3. Structure d'un message FLPR
@@ -50,7 +50,7 @@ Voici le schéma des en-têtes de message FLPR :
     
                   Format d'Entêtes d'un Message FLPR
 
-Sachant que la charge utile d'un paquet TCP est de 1440 octets soit 11520 bits, on peut donc y stocker au maximum 360 adresses IPv4 de 32 bits. La puissance de 2 la plus proche est 256, soit 2^8, donc on peut stocker le nombre maximum de rebonds sur 8 bits, d'où les en-têtes `Counter` et `Max Bounce` codés sur 1 octet. Cela signifie aussi que le nombre maximum d'adresses IPv4 dans `Bounce History` est de 255 : la balle ne peut faire que 255 rebonds maximum.
+Sachant que la charge utile d'un paquet TCP est de de à peu près 1400 octets soit 11 200 bits, on peut donc y stocker au maximum 350 adresses IPv4 de 32 bits. La puissance de 2 la plus proche est 256, soit 2^8, donc on peut stocker le nombre de rebonds sur 8 bits, d'où les en-têtes `Counter` et `Bounce Limit` codés sur 1 octet. Cela signifie aussi que le nombre maximum d'adresses IPv4 dans `Bounce History` est de 255 : la balle ne peut faire que 255 rebonds maximum.
 
 ### 4. Etapes du jeu
 

@@ -7,7 +7,15 @@ Le protocole Flipper (FLPR) est un protocole permettant à plusieurs ordinateurs
 - [Spécification non-sécurisée][specs-unsafe]
 - [Spécification sécurisée][specs-safe]
 
-FLPR possède également une implémentation de référence en Python réalisée avec la librairie Scapy se trouvant dans le paquetage `impl`.
+FLPR version non-sécurisée possède une implémentation de référence en Python réalisée avec la librairie Scapy se trouvant dans le paquetage `impl`.
+
+## Utilisation
+
+D'abord, installez les dépendances :
+
+    pip install -r requirements.txt
+
+Pour lancer la phase d'écoute de messages FLPR, exécutez `listen.py`. Pour lancer une nouvelle balle, exécutez `start_ball.py`.
 
 
 [specs-unsafe]: /TimotheAlbouy/flipper-protocol/blob/master/specs-unsafe.md
