@@ -1,6 +1,6 @@
 from scapy.all import *
 
-from impl.flpr import FLPR, FLPR_PORT
+from .flpr import FLPR, FLPR_PORT
 
 
 # verify that the last IP in history is the sender's IP

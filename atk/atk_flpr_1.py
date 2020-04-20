@@ -1,7 +1,7 @@
 from scapy.all import *
 
-from impl.flpr import FLPR, FLPR_PORT
-from impl.util import send_flpr, random_ip, own_ip
+from .flpr import FLPR, FLPR_PORT
+from .util import send_flpr, random_ip, own_ip
 
 
 # create a new ball with already 10 occurrences of his own IP in the history

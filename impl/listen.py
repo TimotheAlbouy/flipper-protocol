@@ -1,11 +1,10 @@
-import time
 from collections import Counter
 
 from scapy.all import *
 
-from impl.flpr import FLPR, FLPR_PORT
-from impl.util import send_flpr, random_ip, own_ip
-from impl.pool import pool
+from .flpr import FLPR, FLPR_PORT
+from .util import send_flpr, random_ip, own_ip
+from .pool import pool
 
 
 def elect_winner(hist, id):
