@@ -18,7 +18,7 @@ def verify_flpr(pkt):
             else:
                 ball_histories[flpr.id] = flpr.hist
                 print("new ball history saved")
-                send(pkt)
+                send(pkt, verbose=False)
                 print("message forwarded")
 
 
@@ -27,5 +27,5 @@ if __name__ == "__main__":
     bind_layers(TCP, FLPR, sport=FLPR_PORT)
     bind_layers(TCP, FLPR, dport=FLPR_PORT)
     print("listening for FLPR on TCP port %s" % FLPR_PORT)
-    f = "tcp and port %s" % FLPR_PORT
-    sniff(filter=f, prn=verify_flpr)
+    # intercept only incoming FLPR messages
+    sniff(prn=verify_flpr, lfilter=lambda pkt: pkt[Ether].src != Ether().src and FLPR in pkt)

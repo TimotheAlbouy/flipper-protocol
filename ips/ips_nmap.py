@@ -8,8 +8,7 @@ def verify_pkt(pkt):
     if UDP in pkt:
         print("UDP is not allowed.")
     elif TCP in pkt:
-        # transport layer segment (TCP or UDP)
-        tcp = pkt.payload.payload
+        tcp = pkt[TCP]
         if tcp.dport == 80:
             print("Forwarding request on port %s." % tcp.dport)
             response_ports.append(tcp.sport)

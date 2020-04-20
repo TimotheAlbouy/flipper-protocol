@@ -6,7 +6,7 @@ from impl.pool import pool
 
 def send_flpr(dst, id, lim, hist):
     flpr = IP(dst=dst)/TCP(sport=FLPR_PORT, dport=FLPR_PORT)/FLPR(id=id, lim=lim, hist=hist)
-    send(flpr)
+    send(flpr, verbose=False)
 
 
 def own_ip():
