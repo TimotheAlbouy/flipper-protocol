@@ -1,4 +1,4 @@
-from time import time
+import time
 from collections import Counter
 
 from scapy.all import *
@@ -17,7 +17,7 @@ def elect_winner(hist, id):
             break
         winners.append(s[0])
     print("winner(s) of ball %s: %s" % (id, ", ".join(winners)))
-    print("time: %s" % time())
+    print("time: %s" % time.time())
 
 
 def handle_flpr(pkt):
