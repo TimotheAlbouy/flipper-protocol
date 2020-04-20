@@ -1,9 +1,8 @@
-from subprocess import call
-
 from scapy.all import *
 
 from flpr import FLPR, FLPR_PORT
 from ifaces import ifaces
+from util import ban_ip
 
 ball_histories = {}
 
@@ -18,7 +17,7 @@ def ips_flpr_1(pkt):
         print("new ball")
         if len(flpr.hist) > 1:
             print("ATTACK DETECTED: new ball with several IP in history")
-            call("iptables -A INPUT -s %s -p tcp --destination-port %s -j DROP" % (ip.src, FLPR_PORT))
+            ban_ip(ip.src)
         else:
             ball_histories[flpr.id] = flpr.hist
             print("new ball history saved")
@@ -27,7 +26,7 @@ def ips_flpr_1(pkt):
         print("existing ball")
         if ball_histories[flpr.id] != flpr.hist[:-1]:
             print("ATTACK DETECTED: new history not based on previous one")
-            call("iptables -A INPUT -s %s -p tcp --destination-port %s -j DROP" % (ip.src, FLPR_PORT))
+            ban_ip(ip.src)
         else:
             print("message forwarded")
     print()

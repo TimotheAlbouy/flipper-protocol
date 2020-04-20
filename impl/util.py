@@ -1,3 +1,5 @@
+from subprocess import call
+
 from scapy.all import *
 
 from flpr import FLPR, FLPR_PORT
@@ -7,6 +9,12 @@ from pool import pool
 def send_flpr(dst, id, lim, hist):
     flpr = IP(dst=dst)/TCP(sport=FLPR_PORT, dport=FLPR_PORT)/FLPR(id=id, lim=lim, hist=hist)
     send(flpr, verbose=False)
+
+
+def ban_ip(ip):
+    cmd = "iptables -A INPUT -s %s -p tcp --destination-port %s -j DROP" % (ip, FLPR_PORT)
+    call(cmd.split(" "))
+    print("%s banned" % ip)
 
 
 def own_ip():

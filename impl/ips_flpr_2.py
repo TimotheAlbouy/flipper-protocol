@@ -1,9 +1,8 @@
-from subprocess import call
-
 from scapy.all import *
 
 from flpr import FLPR, FLPR_PORT
 from ifaces import ifaces
+from util import ban_ip
 
 
 # verify that the last IP in history is the sender's IP
@@ -13,13 +12,13 @@ def ips_flpr_2(pkt):
     print("flipper message received, ID = %s, CTR = %s, LIM = %s" % (flpr.id, flpr.ctr, flpr.lim))
     if not flpr.hist:
         print("ATTACK DETECTED: history is empty")
-        call("iptables -A INPUT -s %s -p tcp --destination-port %s -j DROP" % (ip.src, FLPR_PORT))
+        ban_ip(ip.src)
     elif flpr.ctr == flpr.lim:
         print("scores communication")
         print("message forwarded")
     elif ip.src != flpr.hist[-1]:
         print("ATTACK DETECTED: last IP in history and sender's IP not matching")
-        call("iptables -A INPUT -s %s -p tcp --destination-port %s -j DROP" % (ip.src, FLPR_PORT))
+        ban_ip(ip.src)
     else:
         print("regular message")
         print("message forwarded")
