@@ -28,4 +28,4 @@ if __name__ == "__main__":
     bind_layers(TCP, FLPR, dport=FLPR_PORT)
     print("listening for FLPR on TCP port %s" % FLPR_PORT)
     # intercept only incoming FLPR messages
-    sniff(prn=ips_flpr_2, lfilter=lambda pkt: pkt[Ether].src != Ether().src and FLPR in pkt)
+    sniff(prn=ips_flpr_2, lfilter=lambda pkt: FLPR in pkt and pkt[Ether].src != Ether().src)
