@@ -36,7 +36,7 @@ def handle_flpr(pkt):
 
 
 def filter_flpr(pkt):
-    return pkt[Ether].src != own_mac() and FLPR not in pkt
+    return pkt[Ether].src != own_mac() and FLPR in pkt
 
 
 if __name__ == "__main__":
@@ -45,5 +45,5 @@ if __name__ == "__main__":
     bind_layers(TCP, FLPR, dport=FLPR_PORT)
     print("listening for FLPR on TCP port %s" % FLPR_PORT)
     #f = "tcp port %s" % FLPR_PORT
-    # lambda pkt: pkt[Ether].src != own_mac() and FLPR not in pkt
+    # lambda pkt: pkt[Ether].src != own_mac() and FLPR in pkt
     sniff(prn=handle_flpr, lfilter=filter_flpr)
