@@ -37,7 +37,7 @@ def handle_flpr(pkt):
         dst = random_ip()
         flpr.hist.append(dst)
         send_flpr(dst, flpr.id, flpr.lim, flpr.hist)
-        print("ball resent")
+        print("ball sent back")
     else:
         print("do nothing")
     print()

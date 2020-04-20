@@ -50,7 +50,7 @@ Voici le schéma des en-têtes de message FLPR :
     
                   Format d'Entêtes d'un Message FLPR
 
-Sachant que la charge utile d'un paquet TCP est de de à peu près 1400 octets soit 11 200 bits, on peut donc y stocker au maximum 350 adresses IPv4 de 32 bits. La puissance de 2 la plus proche est 256, soit 2^8, donc on peut stocker le nombre de rebonds sur 8 bits, d'où les en-têtes `Counter` et `Bounce Limit` codés sur 1 octet. Cela signifie aussi que le nombre maximum d'adresses IPv4 dans `Bounce History` est de 254 : la balle ne peut faire que 254 rebonds maximum. Deux valeurs du compteur sont réservées : 0 (il n'y a aucune IP dans l'historique) et 255 (la 255ème valeur de l'historique ne peut jamais être une IP donnant un rebond). L'avantage de cette version naïve du protocole est donc qu'un message est contenu dans un seul segment TCP, pas besoin de faire du réassemblage de paquets.
+Sachant que la charge utile d'un paquet TCP est de de à peu près 1400 octets soit 11 200 bits, on peut donc y stocker au maximum 350 adresses IPv4 de 32 bits. La puissance de 2 la plus proche est 256, soit 2^8, donc on peut stocker le nombre de rebonds sur 8 bits, d'où les en-têtes `Counter` et `Bounce Limit` codés sur 1 octet. Cela signifie aussi que le nombre maximum d'adresses IPv4 dans `Bounce History` est de 254 : la balle ne peut faire que 254 rebonds maximum. Deux valeurs de `Counter` sont réservées : 0 (il n'y a aucune IP dans `Bounce History`) et 255 (la 255ème valeur de `Bounce History` ne peut jamais être une IP donnant un rebond). L'avantage de cette version naïve du protocole est donc qu'un message est contenu dans un seul segment TCP, pas besoin de faire du réassemblage de paquets.
 
 ### 4. Etapes du jeu
 
