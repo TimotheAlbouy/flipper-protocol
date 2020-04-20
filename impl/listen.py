@@ -15,7 +15,7 @@ def elect_winner(hist):
         if s[1] < high_score:
             break
         winners.append(s[0])
-    print("winner(s) of ball: %s" % winners)
+    print("winners of ball exchange: %s" % winners)
 
 
 def handle_flpr(pkt):
