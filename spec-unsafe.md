@@ -98,7 +98,8 @@ L'opérateur . est la concaténation.
   - `Counter` = `Bounce Limit` reçu
   - `Bounce Limit` = `Bounce Limit` reçu
   - `Bounce History` = `Bounce History` recu . "0.0.0.0"
-- envoyer le message FLPR à toutes les adresses IP de la liste (y compris soi-même)
+- envoyer le message FLPR à toutes les autres adresses IP de la liste
+- élire comme gagnant de l'échange de balles le(s) joueur(s) dont l'adresse IP apparaît le plus souvent dans `Bounce History`
 
 L'opérateur . est la concaténation.
 
