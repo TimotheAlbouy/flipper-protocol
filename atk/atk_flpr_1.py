@@ -16,7 +16,6 @@ def atk_flpr_1():
 
 
 if __name__ == "__main__":
-    conf.color_theme = ColorOnBlackTheme()
     bind_layers(TCP, FLPR, sport=FLPR_PORT)
     bind_layers(TCP, FLPR, dport=FLPR_PORT)
     atk_flpr_1()

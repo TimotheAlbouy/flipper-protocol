@@ -1,3 +1,4 @@
+from time import time
 from collections import Counter
 
 from scapy.all import *
@@ -16,6 +17,7 @@ def elect_winner(hist, id):
             break
         winners.append(s[0])
     print("winner(s) of ball %s: %s" % (id, ", ".join(winners)))
+    print("time: %s" % time())
 
 
 def handle_flpr(pkt):
@@ -44,7 +46,6 @@ def handle_flpr(pkt):
 
 
 if __name__ == "__main__":
-    conf.color_theme = ColorOnBlackTheme()
     bind_layers(TCP, FLPR, sport=FLPR_PORT)
     bind_layers(TCP, FLPR, dport=FLPR_PORT)
     print("listening for FLPR on TCP port %s" % FLPR_PORT)

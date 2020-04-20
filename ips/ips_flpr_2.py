@@ -24,7 +24,6 @@ def ips_flpr_2(pkt):
 
 
 if __name__ == "__main__":
-    conf.color_theme = ColorOnBlackTheme()
     bind_layers(TCP, FLPR, sport=FLPR_PORT)
     bind_layers(TCP, FLPR, dport=FLPR_PORT)
     print("listening for FLPR on TCP port %s" % FLPR_PORT)
