@@ -5,7 +5,7 @@ from ifaces import ifaces
 from util import ban_ip
 
 
-# verify that the last IP in history is the sender's IP
+# verify that the last IP in history is the receiver's IP
 def ips_flpr_2(pkt):
     ip = pkt[IP]
     flpr = pkt[FLPR]
@@ -16,8 +16,8 @@ def ips_flpr_2(pkt):
     elif flpr.ctr == flpr.lim:
         print("scores communication")
         print("message forwarded")
-    elif ip.src != flpr.hist[-1]:
-        print("ATTACK DETECTED: last IP in history and sender's IP not matching")
+    elif ip.dst != flpr.hist[-1]:
+        print("ATTACK DETECTED: last IP in history and receiver's IP not matching")
         ban_ip(ip.src)
     else:
         print("regular message")

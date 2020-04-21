@@ -28,6 +28,8 @@ def ips_flpr_1(pkt):
             print("ATTACK DETECTED: new history not based on previous one")
             ban_ip(ip.src)
         else:
+            ball_histories[flpr.id] = flpr.hist
+            print("ball history updated")
             print("message forwarded")
     print()
 
