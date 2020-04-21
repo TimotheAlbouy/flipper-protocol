@@ -4,13 +4,13 @@ from flpr import FLPR, FLPR_PORT
 from util import send_flpr, random_ip, own_ip
 
 
-# create a new ball with already 10 occurrences of his own IP in the history
+# create a new ball with 2 occurrences of his own IP in the history
 def atk_flpr_1():
     src = own_ip()
     dst = random_ip()
     id = random.getrandbits(16)
     lim = random.getrandbits(8)
-    hist = [src, src, src, src, src, src, src, src, src, src]
+    hist = [src, src, dst]
     send_flpr(dst, id, lim, hist)
     print("new illegal ball created, ID = %s" % id)
 
