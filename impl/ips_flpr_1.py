@@ -14,8 +14,8 @@ def ips_flpr_1(pkt):
     while i < len(flpr.hist) - 1:
         if flpr.hist[i] == flpr.hist[i+1]:
             print("ATTACK DETECTED: new ball with several IP in history")
-            print()
             ban_ip(ip.src)
+            print()
             return
     print("message forwarded")
     print()
