@@ -12,7 +12,7 @@ def send_flpr(dst, id, lim, hist):
 
 
 def ban_ip(ip):
-    cmd = "iptables -A INPUT -s %s -p tcp --destination-port %s -j DROP" % (ip, FLPR_PORT)
+    cmd = "iptables -A FORWARD -s %s -p tcp --destination-port %s -j DROP" % (ip, FLPR_PORT)
     call(cmd.split(" "))
     print("%s banned" % ip)
 
