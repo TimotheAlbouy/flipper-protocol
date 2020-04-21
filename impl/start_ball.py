@@ -1,9 +1,7 @@
-import time
-
 from scapy.all import *
 
-from impl.flpr import FLPR, FLPR_PORT
-from impl.util import send_flpr, random_ip
+from flpr import FLPR, FLPR_PORT
+from util import send_flpr, random_ip
 
 
 def start_ball():

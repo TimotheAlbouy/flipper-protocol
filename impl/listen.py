@@ -1,11 +1,10 @@
-import time
 from collections import Counter
 
 from scapy.all import *
 
-from impl.flpr import FLPR, FLPR_PORT
-from impl.util import send_flpr, random_ip, own_ip
-from impl.pool import pool
+from flpr import FLPR, FLPR_PORT
+from util import send_flpr, random_ip, own_ip
+from pool import pool
 
 
 def elect_winner(hist, id):
@@ -50,4 +49,4 @@ if __name__ == "__main__":
     bind_layers(TCP, FLPR, dport=FLPR_PORT)
     print("listening for FLPR on TCP port %s" % FLPR_PORT)
     # intercept only incoming FLPR messages
-    sniff(prn=handle_flpr, lfilter=lambda pkt: pkt[Ether].src != Ether().src and FLPR in pkt)
+    sniff(prn=handle_flpr, lfilter=lambda pkt: FLPR in pkt and pkt[Ether].src != Ether().src)
