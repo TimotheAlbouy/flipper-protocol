@@ -1,0 +1,48 @@
+Ubuntu-guest-VotreIPS :
+
+apt update
+apt install iptables dnsutils bind9 git ca-certificates python3 python3-pip
+
+iptables -t nat -A POSTROUTING -o eth2 -j MASQUERADE
+nano /etc/bind/named.conf.options
+        forwarders {
+		8.8.8.8;
+	}
+service bind9 restart
+
+git clone https://github.com/TimotheAlbouy/flipper-protocol.git
+cd flipper-protocol
+pip3 install -r requirements.txt
+
+python3 impl/ips_flpr_#.py &
+
+nettoyer iptables :
+iptable -F FORWARD
+
+---------------------------------
+
+Toolbox-2 :
+
+apt update
+apt install git ca-certificates python3 python3-pip
+
+git clone https://github.com/TimotheAlbouy/flipper-protocol.git
+cd flipper-protocol
+pip3 install -r requirements.txt
+
+python3 impl/listen.py &
+
+---------------------------------
+
+UbuntuDockerGuest-2 :
+
+apt update
+apt install git ca-certificates python3 python3-pip
+
+git clone https://github.com/TimotheAlbouy/flipper-protocol.git
+cd flipper-protocol
+pip3 install -r requirements.txt
+
+python3 impl/listen.py &
+python3 impl/atk_flpr_#.py
+
