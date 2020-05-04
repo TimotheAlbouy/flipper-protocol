@@ -51,5 +51,5 @@ Pour lancer sur l'IPS le code prémunissant contre l'attaque 2 :
 
 
 
-[specs-unsafe]: /TimotheAlbouy/flipper-protocol/blob/master/specs-unsafe.md
-[specs-safe]: /TimotheAlbouy/flipper-protocol/blob/master/specs-safe.md
+[specs-unsafe]: /specs-unsafe.md
+[specs-safe]: /specs-safe.md
